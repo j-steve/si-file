@@ -1,0 +1,17 @@
+{
+	"name": "si-file",
+	"version": "1.0.0",
+	"description": "A querystring parser that supports nesting and arrays, with a depth limit",
+	"homepage": "https://github.com/j-steve/si-file",
+	"keywords": ["util", "file", "os", "fs", "promise"],
+	"author": "J. Stephen Sichina",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/j-steve/si-file.git"
+	},
+	"main": "lib/index.js",
+	"engines": {
+		"node": ">=0.6"
+	},
+	"dependencies": {}
+}
