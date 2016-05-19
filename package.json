@@ -1,7 +1,7 @@
 {
 	"name": "si-file",
-	"version": "1.0.1",
-	"description": "A A general-purpose File object to assist with any Node project",
+	"version": "1.0.2",
+	"description": "A general-purpose File object to assist with any Node project",
 	"homepage": "https://github.com/j-steve/si-file",
 	"keywords": ["util", "file", "os", "fs", "promise"],
 	"author": "J. Stephen Sichina",
