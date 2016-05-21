@@ -42,8 +42,8 @@ function File(path, encoding) {
 	this.delete = function() {
 		return queue.finally(function() {
 			return new Promise(function(resolve, reject) {
-				return fs.unlink(self.path, function(err, response) {
-					if (err) {reject(err);} else {resolve(response);}
+				return fs.unlink(self.path, function(err) {
+					if (err && err.code !== ERR_NO_FILE) {reject(err);} else {resolve();}
 				});
 			});
 		});
