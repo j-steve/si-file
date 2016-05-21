@@ -18,7 +18,7 @@ var file = new File('dir/myFile.txt');
 You may optionally specify the file encoding type as a second parameter, which will be used for all read/write operations.
 If you do not specify an encoding then `utf8` will be used by default.
 
-```js;
+```js
 var file = new File('dir/myFile.txt', 'ascii');
 ```
 
@@ -33,9 +33,17 @@ Node supports the following encoding types:
 
 #### File Properties
 
-```js
-var myPath = file.path
+File has two read-only properties.  Use `file.path` to get the full path of the file, as passed into the constructor.
+You can also use `file.name` get the filename only, without the directory (but including the file extension, if applicable).
 
+```js
+file.path === 'dir/myFile.txt';  // true
+file.name === 'myFile.txt';      // true
+```
+
+To see whether the file actually exists on the filesystem, use `file.existsSync()`.
+
+```js
 if (file.existsSync()) {
   // file exists
 }
