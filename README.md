@@ -7,12 +7,29 @@ It uses the [Bluebird](https://www.npmjs.com/package/bluebird) implementation of
 ## Basic usage
 
 #### Instantiation
+For basic instantiation, simply require the library and pass in the file path as a constructor parameter.
 
 ```js
 var File = require('si-file');
 
-var file = new File("dir/myFile.txt");
+var file = new File('dir/myFile.txt');
 ```
+##### Encoding Type
+You may optionally specify the file encoding type as a second parameter, which will be used for all read/write operations.
+If you do not specify an encoding then `utf8` will be used by default.
+
+```js;
+var file = new File('dir/myFile.txt', 'ascii');
+```
+
+Node supports the following encoding types:
+ - `utf-8` (or `utf8`)
+ - `ascii`
+ - `base64`
+ - `binary`
+ - `hex`
+ - `ucs-2` (or `ucs2`, `utf16le`, or `utf-16le`)
+
 
 #### File Properties
 

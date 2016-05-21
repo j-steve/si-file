@@ -1,8 +1,7 @@
-var fs			= require('fs');
-var Path		= require('path');
-var Promise		= require('bluebird');
+var fs        = require('fs');
+var Path      = require('path');
+var Promise   = require('bluebird');
 
-var PATH_SEP = require('os').EOL;
 var EOL = require('os').EOL;
 var EOL_REGEX = /\r?\n/;
 var ERR_NO_FILE = 'ENOENT';
@@ -12,6 +11,7 @@ var filequeues = {};
 /**
  * @class
  * @param {string} path
+ * @param {string} [encoding='utf8']
  */
 function File(path, encoding) {
 	var self = this;
@@ -21,13 +21,20 @@ function File(path, encoding) {
 	if (!filequeues[path]) {filequeues[path] = Promise.resolve();}
 	var queue = filequeues[path];
 	
-	// Set properties.
+	// --------------------------------------------------
+	// Properties
+	// --------------------------------------------------
+
 	Object.defineProperty(this, 'path', {get: function() {
 		return path;
 	}});
 	Object.defineProperty(this, 'name', {get: function() {
 		return Path.basename(path);
 	}});
+
+	// --------------------------------------------------
+	// Methods
+	// --------------------------------------------------
 
 	/**
 	 * @returns {Promise<Boolean}
