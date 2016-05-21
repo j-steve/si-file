@@ -2,15 +2,16 @@ var fs			= require('fs');
 var Path		= require('path');
 var Promise		= require('bluebird');
 
+var PATH_SEP = require('os').EOL;
 var EOL = require('os').EOL;
 var EOL_REGEX = /\r?\n/;
+var ERR_NO_FILE = 'ENOENT';
 
 var filequeues = {};
 
 /**
  * @class
  * @param {string} path
- * @param {string} [encoding='utf8']
  */
 function File(path, encoding) {
 	var self = this;
@@ -27,6 +28,19 @@ function File(path, encoding) {
 	Object.defineProperty(this, 'name', {get: function() {
 		return Path.basename(path);
 	}});
+
+	/**
+	 * @returns {Promise<Boolean}
+	 */
+	this.delete = function() {
+		return queue.finally(function() {
+			return new Promise(function(resolve, reject) {
+				return fs.unlink(self.path, function(err, response) {
+					if (err) {reject(err);} else {resolve(response);}
+				});
+			});
+		});
+	};
 
 	/**
 	 * @param {String|Number|Buffer} data
@@ -46,8 +60,7 @@ function File(path, encoding) {
 		return queue.finally(function() {
 			return new Promise(function(resolve, reject) {
 				fs.writeFile(self.path, data, options, function(err, response) {
-					if (err) {return reject(err);}
-					resolve(response);
+					if (err) {reject(err);} else {resolve(response);}
 				});
 			});
 		});
@@ -71,8 +84,7 @@ function File(path, encoding) {
 		return queue.then(function() {
 			return new Promise(function(resolve, reject) {
 				fs.appendFile(self.path, data, options, function(err, response) {
-					if (err) {return reject(err);}
-					resolve(response);
+					if (err) {reject(err);} else {resolve(response);}
 				});
 			});
 		});
@@ -88,9 +100,8 @@ function File(path, encoding) {
 	 */
 	this.read = function() {
 		return new Promise(function(resolve, reject) {
-			fs.readFile(self.path, encoding, function(err, data) {
-				if (err) {return reject(err);}
-				return resolve(data);
+			fs.readFile(self.path, encoding, function(err, response) {
+				if (err) {reject(err);} else {resolve(response);}
 			});
 		});
 	};
@@ -120,7 +131,12 @@ function File(path, encoding) {
 	 * @returns {Boolean}
 	 */
 	this.existsSync = function() {
-		return fs.existsSync(self.path);
+		try {
+			var statSync = fs.statSync(self.path);
+			return statSync.isFile() || statSync.isDirectory();
+		} catch (e) {
+			if (e.code === ERR_NO_FILE) {return false;} else {throw e;}
+		}
 	};
 }
 
