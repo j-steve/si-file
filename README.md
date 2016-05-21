@@ -11,7 +11,7 @@ It uses the [Bluebird](https://www.npmjs.com/package/bluebird) implementation of
 ```js
 var File = require('si-file');
 
-var file = new File("C:\myFile.txt");
+var file = new File("dir/myFile.txt");
 ```
 
 #### File Properties
@@ -20,7 +20,7 @@ var file = new File("C:\myFile.txt");
 var myPath = file.path
 
 if (file.existsSync()) {
-	// file exists
+  // file exists
 }
 ```
 
@@ -32,13 +32,13 @@ The asynchronous methods return Promises of the requested data.
 
 ```js
 file.read().then(function(fileData) {
-	// file has been read; fileData is the full contents
+  // file has been read; fileData is the full contents
 }).catch(function(err) {
-	// handle any errors
+  // handle any errors
 });
 
 file.readLines().then(function(fileDataLines) {
-	// file has been read; fileDataLines is an array of its lines
+  // file has been read; fileDataLines is an array of its lines
 });
 ```
 
@@ -52,15 +52,15 @@ Use `file.write()` to write data asynchronously.  Optionally pass options as a s
 
 ```js
 file.write("some data").then(function() {
-	// file is written
+  // file is written
 });
 ```
 
-You can also write a single line, which will append the system-appropriate line ending ("\n" or "\r\n") to the end of the given string, if it does not already end with that character.  Any existing line endings within the string are preserved.
+You can also write a single line, which will append the system-appropriate line ending (`\n` or `\r\n`) to the end of the given string, if it does not already end with that character.  Any existing line endings within the string are preserved.
 
 ```js
 file.writeLine("some data").then(function() {
-	// file is written
+  // file is written
 });
 ```
 
@@ -72,6 +72,6 @@ You can also use `file.append()` and `file.appendLine()`, which work like their 
 
 ```js
 file.delete().then(function() {
-	// file is deleted
+  // file is deleted
 });
 ```
