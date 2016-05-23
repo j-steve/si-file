@@ -1,6 +1,6 @@
 {
   "name": "si-file",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "A general-purpose File object to assist with any Node project",
   "homepage": "https://github.com/j-steve/si-file",
   "keywords": [
@@ -16,7 +16,7 @@
     "url": "git+https://github.com/j-steve/si-file.git"
   },
   "bugs": {
-    "url": "http://github.com/request/request/issues"
+    "url": "https://github.com/j-steve/si-file/issues"
   },
   "main": "src/index.js",
   "engines": {
