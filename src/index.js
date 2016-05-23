@@ -1,6 +1,6 @@
-var fs        = require('fs');
 var Path      = require('path');
 var Promise   = require('bluebird');
+var fs        = Promise.promisifyAll(require('fs'));
 
 var EOL = require('os').EOL;
 var EOL_REGEX = /\r?\n/;
@@ -40,12 +40,8 @@ function File(path, encoding) {
 	 * @returns {Promise<Boolean}
 	 */
 	this.delete = function() {
-		return queue.finally(function() {
-			return new Promise(function(resolve, reject) {
-				return fs.unlink(self.path, function(err) {
-					if (err && err.code !== ERR_NO_FILE) {reject(err);} else {resolve();}
-				});
-			});
+		return queue = queue.finally(function() {
+			return fs.unlinkAsync(self.path).catch({code: ERR_NO_FILE}, function() {});
 		});
 	};
 
@@ -64,12 +60,8 @@ function File(path, encoding) {
 	 * @returns {Promise}
 	 */
 	this.write = function(data, options) {
-		return queue.finally(function() {
-			return new Promise(function(resolve, reject) {
-				fs.writeFile(self.path, data, options, function(err, response) {
-					if (err) {reject(err);} else {resolve(response);}
-				});
-			});
+		return queue = queue.finally(function() {
+			return fs.writeFileAsync(self.path, data, options);
 		});
 	};
 
@@ -88,12 +80,8 @@ function File(path, encoding) {
 	 * @returns {Promise}
 	 */
 	this.append = function(data, options) {
-		return queue.then(function() {
-			return new Promise(function(resolve, reject) {
-				fs.appendFile(self.path, data, options, function(err, response) {
-					if (err) {reject(err);} else {resolve(response);}
-				});
-			});
+		return queue = queue.finally(function() {
+			return fs.appendFileAsync(self.path, data, options);
 		});
 	};
 	
@@ -106,10 +94,8 @@ function File(path, encoding) {
 	 * @returns {Promise<String>}
 	 */
 	this.read = function() {
-		return new Promise(function(resolve, reject) {
-			fs.readFile(self.path, encoding, function(err, response) {
-				if (err) {reject(err);} else {resolve(response);}
-			});
+		return queue = queue.finally(function() {
+			return fs.readFileAsync(self.path, encoding);
 		});
 	};
 
@@ -117,7 +103,9 @@ function File(path, encoding) {
 	 * @returns {Promise<Array<String>>}
 	 */
 	this.readLines = function() {
-		return self.read().then(function(data) {return data.split(EOL_REGEX);});
+		return queue = queue.finally(function() {
+			return self.read().then(function(data) {return data.split(EOL_REGEX);});
+		});
 	};
 	
 	/**
@@ -132,6 +120,17 @@ function File(path, encoding) {
 	 */
 	this.readLinesSync = function() {
 		return self.readSync().split(EOL_REGEX);
+	};
+	
+	/**
+	 * @returns {Promise<Boolean>}
+	 */
+	this.exists = function() {
+		return queue = queue.finally(function() {
+			return fs.statAsync(self.path).then(function(result) {
+				return result.isFile() || result.isDirectory();
+			}).catch({code: ERR_NO_FILE}, function() {return false;});
+		});
 	};
 	
 	/**
