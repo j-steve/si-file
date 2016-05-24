@@ -4,6 +4,10 @@ A general-purpose File object to assist with any project, using Promises for asy
 
 It uses the [Bluebird](https://www.npmjs.com/package/bluebird) implementation of Promises. 
 
+## File queue
+
+Behind the scenes, the `si-file` object uses a Promise-based queue system for all asynchronous operations, so that all operation are guaranteed to execute in the order in which they were requested for a particular file path.  Between different files there is no such guarantee.  This applies to the file path, not the particular `si-file` instance, so multiple instances of a single path will share the same file queue.
+
 ## Basic usage
 
 #### Instantiation
