@@ -18,7 +18,7 @@ function File(path, encoding) {
 	if (!encoding) {encoding = 'utf8';}
 	
 	// Create file q[self.path] for this file.
-	if (!q[self.path]) {q[self.path] = Promise.resolve();}
+	if (!q[path]) {q[path] = Promise.resolve();}
 	
 	// --------------------------------------------------
 	// Public Properties
