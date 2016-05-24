@@ -56,7 +56,7 @@ function File(path, encoding) {
 	 * @returns {Promise<Boolean}
 	 */
 	this.delete = function() {
-		return q[self.path] = q[self.path].finally(function() {
+		return q[self.path] = q[self.path].catch(console.error).then(function() {
 			return fs.unlinkAsync(self.path).catch({code: ERR_NO_FILE}, function() {});
 		});
 	};
@@ -105,7 +105,7 @@ function File(path, encoding) {
 	 * @returns {Promise<String>}
 	 */
 	this.read = function() {
-		return q[self.path] = q[self.path].finally(function() {
+		return q[self.path] = q[self.path].catch(console.error).then(function() {
 			return fs.readFileAsync(self.path, encoding);
 		});
 	};
@@ -114,7 +114,7 @@ function File(path, encoding) {
 	 * @returns {Promise<Array<String>>}
 	 */
 	this.readLines = function() {
-		return q[self.path] = q[self.path].finally(function() {
+		return q[self.path] = q[self.path].catch(console.error).then(function() {
 			return self.read().then(function(data) {
 				return data.split(EOL_REGEX);
 			});
@@ -190,7 +190,7 @@ function File(path, encoding) {
 	 * @returns {Promise<Stat>}
 	 */
 	function stat() {
-		return q[self.path].finally(function() {
+		return q[self.path].catch(console.error).then(function() {
 			return fs.statAsync(self.path).catchReturn({code: ERR_NO_FILE}, false);
 		});
 	}
@@ -199,7 +199,7 @@ function File(path, encoding) {
 	 * @returns {Promise}
 	 */
 	function ensureDirExists() {
-		return q[self.path].finally(self.dir.mkdir);
+		return q[self.path].catch(console.error).then(self.dir.mkdir);
 	}
 	
 	function makeLine(data) {
