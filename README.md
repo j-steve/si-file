@@ -39,23 +39,23 @@ You can also use `file.name` get the filename only, without the directory (but i
 ```js
 var file = new File('dir/myFile.txt');
 
-file.path === 'dir/myFile.txt';
-file.name === 'myFile.txt';
-file.ext === 'txt';
+file.path === 'dir/myFile.txt'; // true
+file.name === 'myFile.txt';     // true
+file.ext === 'txt';             // true
 ```
 
 You can also use `dir` to get a new `File` object representing the parent directory of the current file, or `null` if the file is at the root level (i.e. has no parent directory).
 ```js
-file.dir.name === dir;
+file.dir.name === 'dir';       // true
 ```
 
 To see whether the file actually exists on the filesystem, use `file.exists()` or `file.existsSync()`.
 
 ```js
 file.exists().then(function(doesExist) {
-	if (doesExist) {
-		// file exists
-	}
+  if (doesExist) {
+    // file exists
+  }
 });
 
 if (file.existsSync()) {
@@ -67,15 +67,15 @@ Other methods are available to distinguish between folders and files.
 
 ```js
 file.isDirectory().then(function(isDirectory) {
-	if (isDirectory) {
-		// the directory exists
-	}
+  if (isDirectory) {
+    // the directory exists
+  }
 });
 
 file.isFile().then(function(isFile) {
-	if (isFile) {
-		// the file exists (and it's not a directory)
-	}
+  if (isFile) {
+    // the file exists (and it's not a directory)
+  }
 });
 ```
 
