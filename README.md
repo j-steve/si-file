@@ -6,7 +6,7 @@ It uses the [Bluebird](https://www.npmjs.com/package/bluebird) implementation of
 
 ## File queue
 
-Behind the scenes, the `si-file` object uses a Promise-based queue system for all asynchronous operations, so that all operation are guaranteed to execute in the order in which they were requested for a particular file path.  Between different files there is no such guarantee.  This applies to the file path, not the particular `si-file` instance, so multiple instances of a single path will share the same file queue.
+Behind the scenes, the `si-file` object uses a Promise-based queue system for all asynchronous operations, so that all read/write/delete operations requested on a particular file path are guaranteed to execute in the order in which they were requested.  Between different files there is no such guarantee.  This applies to the file path, not the particular `si-file` instance, so multiple instances of a single path will share the same file queue.
 
 ## Basic usage
 
@@ -37,7 +37,7 @@ Node supports the following encoding types:
 
 #### File Properties
 
-File has two read-only properties.  Use `file.path` to get the full path of the file, as passed into the constructor.
+An `si-file` object has several read-only properties that expose path information.  Use `file.path` to get the full path of the file, as passed into the constructor.
 You can also use `file.name` get the filename only, without the directory (but including the file extension, if applicable).
 
 ```js
@@ -48,12 +48,12 @@ file.name === 'myFile.txt';     // true
 file.ext === 'txt';             // true
 ```
 
-You can also use `dir` to get a new `File` object representing the parent directory of the current file, or `null` if the file is at the root level (i.e. has no parent directory).
+You can also use `dir` to get a new `si-file` object representing the parent directory of the current file, or `null` if the file is at the root level (i.e. has no parent directory).
 ```js
 file.dir.name === 'dir';       // true
 ```
 
-To see whether the file actually exists on the filesystem, use `file.exists()` or `file.existsSync()`.
+To see whether the `si-file` object actually exists on the filesystem, use `file.exists()` or `file.existsSync()`.
 
 ```js
 file.exists().then(function(doesExist) {
