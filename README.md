@@ -37,17 +37,49 @@ File has two read-only properties.  Use `file.path` to get the full path of the 
 You can also use `file.name` get the filename only, without the directory (but including the file extension, if applicable).
 
 ```js
-file.path === 'dir/myFile.txt';  // true
-file.name === 'myFile.txt';      // true
+var file = new File('dir/myFile.txt');
+
+file.path === 'dir/myFile.txt';
+file.name === 'myFile.txt';
+file.ext === 'txt';
 ```
 
-To see whether the file actually exists on the filesystem, use `file.existsSync()`.
+You can also use `dir` to get a new `File` object representing the parent directory of the current file, or `null` if the file is at the root level (i.e. has no parent directory).
+```js
+file.dir.name === dir;
+```
+
+To see whether the file actually exists on the filesystem, use `file.exists()` or `file.existsSync()`.
 
 ```js
+file.exists().then(function(doesExist) {
+	if (doesExist) {
+		// file exists
+	}
+});
+
 if (file.existsSync()) {
   // file exists
 }
 ```
+
+Other methods are available to distinguish between folders and files.
+
+```js
+file.isDirectory().then(function(isDirectory) {
+	if (isDirectory) {
+		// the directory exists
+	}
+});
+
+file.isFile().then(function(isFile) {
+	if (isFile) {
+		// the file exists (and it's not a directory)
+	}
+});
+```
+
+To create a directory use `file.mkdir()`.  If the directory already exists it will return a successful promise, but if a file exists of the same name then it will return a failed promise.
 
 ## Reading
 

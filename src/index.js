@@ -22,19 +22,35 @@ function File(path, encoding) {
 	var queue = filequeues[path];
 	
 	// --------------------------------------------------
-	// Properties
+	// Public Properties
 	// --------------------------------------------------
 
 	Object.defineProperty(this, 'path', {get: function() {
 		return path;
 	}});
 	Object.defineProperty(this, 'name', {get: function() {
-		return Path.basename(path);
+		return Path.basename(self.path);
+	}});
+	Object.defineProperty(this, 'dir', {get: function() {
+		var dirName = Path.dirname(self.path);
+		return dirName ? new File(dirName) : null;
+	}});
+	Object.defineProperty(this, 'ext', {get: function() {
+		return Path.extname(self.path);
 	}});
 
 	// --------------------------------------------------
-	// Methods
+	// Public Methods
 	// --------------------------------------------------
+	
+	/**
+	 * @returns {Promise}
+	 */
+	 this.mkdir = function(mode) {
+		return queue = self.isDir().then(function(isDir) {
+			if (!isDir) {return fs.mkdirAsync(self.path, mode);}
+		});
+	};
 
 	/**
 	 * @returns {Promise<Boolean}
@@ -60,7 +76,7 @@ function File(path, encoding) {
 	 * @returns {Promise}
 	 */
 	this.write = function(data, options) {
-		return queue = queue.finally(function() {
+		return queue = ensureDirExists().then(function() {
 			return fs.writeFileAsync(self.path, data, options);
 		});
 	};
@@ -80,15 +96,10 @@ function File(path, encoding) {
 	 * @returns {Promise}
 	 */
 	this.append = function(data, options) {
-		return queue = queue.finally(function() {
+		return queue = ensureDirExists().then(function() {
 			return fs.appendFileAsync(self.path, data, options);
 		});
 	};
-	
-	function makeLine(data) {
-		if (!data.endsWith(EOL)) {data += EOL;}
-		return data;
-	}
 	
 	/**
 	 * @returns {Promise<String>}
@@ -104,7 +115,9 @@ function File(path, encoding) {
 	 */
 	this.readLines = function() {
 		return queue = queue.finally(function() {
-			return self.read().then(function(data) {return data.split(EOL_REGEX);});
+			return self.read().then(function(data) {
+				return data.split(EOL_REGEX);
+			});
 		});
 	};
 	
@@ -123,27 +136,76 @@ function File(path, encoding) {
 	};
 	
 	/**
+	 * Returns {@code true} if this file exists.
+	
 	 * @returns {Promise<Boolean>}
 	 */
 	this.exists = function() {
-		return queue = queue.finally(function() {
-			return fs.statAsync(self.path).then(function(result) {
-				return result.isFile() || result.isDirectory();
-			}).catch({code: ERR_NO_FILE}, function() {return false;});
+		return queue = stat().then(function(stat) {
+			return stat && (stat.isFile() || stat.isDirectory());
 		});
 	};
 	
 	/**
+	 * Returns {@code true} if this file exists.
+	 * 
 	 * @returns {Boolean}
 	 */
 	this.existsSync = function() {
 		try {
-			var statSync = fs.statSync(self.path);
-			return statSync.isFile() || statSync.isDirectory();
+			var stat = fs.statSync(self.path);
+			return stat.isFile() || stat.isDirectory();
 		} catch (e) {
 			if (e.code === ERR_NO_FILE) {return false;} else {throw e;}
 		}
 	};
+	
+	/**
+	 * Returns {@code true} if this file exists and is a file (not a directory).
+	 * 
+	 * @returns {Promise<Boolean>}
+	 */
+	this.isFile = function() { 
+		return queue = stat().then(function(stat) {
+			return stat && stat.isFile();
+		});
+	};
+	
+	/**
+	 * Returns {@code true} if this file exists and is a directory.
+	 * 
+	 * @returns {Promise<Boolean>}
+	 */
+	this.isDir = function() { 
+		return queue = stat().then(function(stat) {
+			return stat && stat.isDirectory();
+		});
+	};
+
+	// --------------------------------------------------
+	// Private Functions
+	// --------------------------------------------------
+	
+	/**
+	 * @returns {Promise<Stat>}
+	 */
+	function stat() {
+		return queue.finally(function() {
+			return fs.statAsync(self.path).catchReturn({code: ERR_NO_FILE}, false);
+		});
+	}
+	
+	/**
+	 * @returns {Promise}
+	 */
+	function ensureDirExists() {
+		return queue.finally(self.dir.mkdir);
+	}
+	
+	function makeLine(data) {
+		if (!data.endsWith(EOL)) {data += EOL;}
+		return data;
+	}
 }
 
 module.exports = File;
